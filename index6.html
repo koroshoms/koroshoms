@@ -1644,8 +1644,8 @@ Views.login = ()=>{
         <div class="sd-line sd-tel">Tel: ${APP.schoolPhones.join(' / ')}</div>
       </div>
       <div class="row" style="justify-content:center;margin-top:1.5rem;gap:1rem">
-        <a href="#/student-login" class="splash-btn">I am a Student</a>
-        <a href="#/staff" class="splash-btn secondary">Teacher / Admin</a>
+        <a href="#/student-login" class="splash-btn">I am a Pupil (Mwanafunzi)</a>
+        <a href="#/staff" class="splash-btn secondary">Teacher Login</a>
       </div>
       <footer class="splash-foot">
         <div class="orn"><span class="dia"></span></div>
@@ -1670,7 +1670,7 @@ Views.staffLogin = ()=>{
           <input id="st_pw" class="input" type="password" inputmode="numeric" maxlength="8" placeholder="Your 4–8 digit PIN">
         </div>
         <div class="alert alert-info t-small">
-          Sign in with the email and PIN your administrator gave you. The default administrator is <b>admin@korosho.ac.tz</b> / PIN <b>1234</b>.
+          Sign in with the email and PIN your administrator gave you.
         </div>
         <button id="staff-login-btn" class="btn btn-primary btn-block" onclick="Views._doStaffLogin()">Sign in</button>
         <p class="t-center t-muted t-small mt2"><a href="#/">Back to home</a></p>
@@ -1702,7 +1702,7 @@ Views.studentLogin = ()=>{
     <div class="page-narrow">
       <div class="card" style="text-align:center">
         <div style="height:58px;width:auto;margin:0 auto .6rem;display:flex;align-items:center;justify-content:center">${Views._logo()}</div>
-        <h2 style="margin:0 0 .3rem">Student Sign In</h2>
+        <h2 style="margin:0 0 .3rem">Pupil O-Exams Account</h2>
         <p class="sub t-muted" style="margin-bottom:0">Choose your class, then find your name.</p>
       </div>
       <div class="card mt2">
@@ -1716,7 +1716,7 @@ Views.studentLogin = ()=>{
         <div class="field">
           <label><span class="badge badge-coral" style="margin-right:.5rem">2</span> Type your name</label>
           <input id="sl_q" class="input" placeholder="Type your name here..." oninput="Views._studentSearch()" autocomplete="off" style="font-size:1.1rem">
-          <div class="hint">Type your name the way your teacher wrote it, then tap your name.</div>
+          <div class="hint">Type your name, then select it.</div>
         </div>
         <div id="sl_results" class="mt1"></div>
         <div id="sl_confirm" class="mt1"></div>
@@ -1752,7 +1752,7 @@ Views._studentSearch = ()=>{
             <div class="t-muted t-small">Adm ${escapeHtml(s.admission_number)}</div>
           </div>
         </div>
-        <span class="badge badge-gray">Tap me →</span>
+        <span class="badge badge-gray">Continue→</span>
       </div>
     </div>`).join('');
 };
@@ -1771,7 +1771,7 @@ Views._studentPick = (id)=>{
         <div class="avatar" style="width:48px;height:48px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem">${initials(s.name)}</div>
       </div>
       <div class="t-small t-muted mb1">Is this you? If yes, tap the button below to sign in.</div>
-      <button id="sl_go" class="btn btn-primary btn-block btn-lg" onclick="Views._studentDoLogin('${s.id}')">Yes, that's me! Sign in →</button>
+      <button id="sl_go" class="btn btn-primary btn-block btn-lg" onclick="Views._studentDoLogin('${s.id}')">Yes, that's me! Enter →</button>
     </div>`;
 };
 Views._studentDoLogin = async (id)=>{
@@ -1782,7 +1782,7 @@ Views._studentDoLogin = async (id)=>{
   try {
     const res = await Auth.studentLogin(s.class_id, s.name);
     if(!res.ok){ toast(res.msg,'error'); return; }
-    toast(`Karibu, ${res.session.name}!`,'success');
+    toast(`Welcome, ${res.session.name}!`,'success');
     location.hash = '#/dashboard';
   } finally {
     if(btn){ btn.disabled = false; btn.textContent = 'Sign in'; }
@@ -1850,9 +1850,9 @@ Views.studentDashboard = ()=>{
       <div class="card mb2" style="background:linear-gradient(135deg,var(--coral),var(--sun));color:#fff;border:none">
         <div class="flex-between">
           <div>
-            <div class="t-tiny" style="opacity:.85">Karibu / Welcome</div>
+            <div class="t-tiny" style="opacity:.85">Welcome / Karibu</div>
             <h2 style="margin:.2rem 0;color:#fff">${escapeHtml(stu.name)}</h2>
-            <div style="opacity:.9">Admission ${escapeHtml(stu.admission_number)} · ${escapeHtml(clsName(stu.class_id))}</div>
+            <div style="opacity:.9">Admission No. ${escapeHtml(stu.admission_number)} Class: ${escapeHtml(clsName(stu.class_id))}</div>
           </div>
           <div class="avatar" style="width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.4rem">${initials(stu.name)}</div>
         </div>
