@@ -674,10 +674,16 @@ const Auth = {
     if(error) return { ok:false, msg: error.message || 'Sign-in failed.' };
     // Fetch staff profile
     const { data: profile, error: pe } = await SB.client.from(TABLE_MAP.users)
-      .select('*').eq('auth_id', data.user.id).maybeSingle();
-    if(pe || !profile){
-      return { ok:false, msg:'Staff profile not found. Ask an administrator to create your profile.' };
-    }
+  .select('*').eq('auth_id', data.user.id).maybeSingle();
+
+if(pe){
+  console.error('Staff profile query failed:', pe);
+  return { ok:false, msg:'Database error: ' + pe.message };
+}
+
+if(!profile){
+  return { ok:false, msg:'No staff profile matches this authenticated account.' };
+}
     if(!profile.active) return { ok:false, msg:'Account is inactive. Contact admin.' };
     delete this._attempts['staff_'+email];
     const sess = this._setSession({ id:profile.id, role:profile.role, name:profile.name, email:profile.email, login_at:nowISO() });
