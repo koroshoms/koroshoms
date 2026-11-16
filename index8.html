@@ -1739,10 +1739,10 @@ Views.login = ()=>{
     <div class="splash">
       <div class="splash-logo">${Views._logo()}</div>
       <h1 class="splash-schoolname">${escapeHtml(APP.schoolName)}</h1>
-      <div class="splash-details">
-        <div class="sd-line">Academic Year ${ayear}</div>
-        <div class="sd-line">${escapeHtml(APP.schoolAddress)}<span class="sep">·</span><br>Email: ${escapeHtml(APP.schoolEmail)}</div>
+      <div class="splash-details"> 
+      <span class="sep"></span>Email: ${escapeHtml(APP.schoolEmail)}</div>
         <div class="sd-line sd-tel">Tel: ${APP.schoolPhones.join(' / ')}</div>
+     <div class="sd-line">Academic Year ${ayear}</div>
       </div>
       <div class="row" style="justify-content:center;margin-top:1.5rem;gap:1rem">
         <a href="#/student-login" class="splash-btn">I am a Student</a>
