@@ -565,7 +565,7 @@ const APP = {
   version: '2.0.0',
   schoolName: 'KOROSHO ENGLISH MEDIUM PRE & PRIMARY SCHOOL',
   schoolMotto: 'Where the knowledge lights',
-  schoolAddress: 'P.O. Box 03, Tandahimba, Tanzania',
+  schoolAddress: 'P.O. Box 03, Tandahimba',
   schoolEmail: 'koroshoschool@gmail.com',
   schoolPhones: ['+255 623 638 683', '+255 622 014 158', '+255 613 367 354'],
   country: 'Tanzania',
@@ -1741,7 +1741,7 @@ Views.login = ()=>{
       <h1 class="splash-schoolname">${escapeHtml(APP.schoolName)}</h1>
       <div class="splash-details">
         <div class="sd-line">Academic Year ${ayear}</div>
-        <div class="sd-line">${escapeHtml(APP.schoolAddress)}<span class="sep">·</span>${escapeHtml(APP.schoolEmail)}</div>
+        <div class="sd-line">${escapeHtml(APP.schoolAddress)}<span class="sep">·</span><br>Email: ${escapeHtml(APP.schoolEmail)}</div>
         <div class="sd-line sd-tel">Tel: ${APP.schoolPhones.join(' / ')}</div>
       </div>
       <div class="row" style="justify-content:center;margin-top:1.5rem;gap:1rem">
@@ -1764,14 +1764,14 @@ Views.staffLogin = ()=>{
         <p class="sub t-muted mb2">Teachers and administrators</p>
         <div class="field">
           <label>Email</label>
-          <input id="st_id" class="input" placeholder="e.g. admin@korosho.ac.tz" autocomplete="off">
+          <input id="st_id" class="input" placeholder="E.g. adminkorosho@gmail.com" autocomplete="off">
         </div>
         <div class="field">
           <label>PIN</label>
-          <input id="st_pw" class="input" type="password" inputmode="numeric" maxlength="8" placeholder="Your 4–8 digit PIN">
+          <input id="st_pw" class="input" type="password" inputmode="numeric" maxlength="8" placeholder="Enter your PIN">
         </div>
         <div class="alert alert-info t-small">
-          Sign in with the email and PIN your administrator gave you. The default administrator is <b>admin@korosho.ac.tz</b> / PIN <b>1234</b>.
+          Sign in with the email and PIN your administrator gave you. The default PIN is <b>KOROSHO2026</b>
         </div>
         <button id="staff-login-btn" class="btn btn-primary btn-block" onclick="Views._doStaffLogin()">Sign in</button>
         <p class="t-center t-muted t-small mt2"><a href="#/">Back to home</a></p>
@@ -1817,7 +1817,7 @@ Views.studentLogin = ()=>{
         <div class="field">
           <label><span class="badge badge-coral" style="margin-right:.5rem">2</span> Type your name</label>
           <input id="sl_q" class="input" placeholder="Type your name here..." oninput="Views._studentSearch()" autocomplete="off" style="font-size:1.1rem">
-          <div class="hint">Type your name the way your teacher wrote it, then tap your name.</div>
+          <div class="hint">Type your name, then tap it.</div>
         </div>
         <div id="sl_results" class="mt1"></div>
         <div id="sl_confirm" class="mt1"></div>
@@ -1835,7 +1835,7 @@ Views._studentSearch = ()=>{
   const results = document.getElementById('sl_results');
   const confirm = document.getElementById('sl_confirm');
   confirm.innerHTML='';
-  if(!cls){ results.innerHTML='<div class="t-muted t-small">👆 First, choose your class above.</div>'; return; }
+  if(!cls){ results.innerHTML='<div class="t-muted t-small">First, choose your class above 👆</div>'; return; }
   // Restrict: only students in selected class, name contains query
   let list = DB.findWhere('students', s=> s.class_id===cls && s.active);
   if(q) list = list.filter(s=> s.name.toLowerCase().includes(q));
@@ -1850,10 +1850,10 @@ Views._studentSearch = ()=>{
           <div class="avatar" style="width:40px;height:40px;border-radius:50%;background:var(--coral-soft);color:var(--coral-dark);display:flex;align-items:center;justify-content:center;font-weight:800">${initials(s.name)}</div>
           <div>
             <div class="t-bold" style="font-size:1.05rem">${escapeHtml(s.name)}</div>
-            <div class="t-muted t-small">Adm ${escapeHtml(s.admission_number)}</div>
+            <div class="t-muted t-small">Adm no.${escapeHtml(s.admission_number)}</div>
           </div>
         </div>
-        <span class="badge badge-gray">Tap me →</span>
+        <span class="badge badge-gray">Continue→</span>
       </div>
     </div>`).join('');
 };
@@ -1871,8 +1871,8 @@ Views._studentPick = (id)=>{
         </div>
         <div class="avatar" style="width:48px;height:48px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem">${initials(s.name)}</div>
       </div>
-      <div class="t-small t-muted mb1">Is this you? If yes, tap the button below to sign in.</div>
-      <button id="sl_go" class="btn btn-primary btn-block btn-lg" onclick="Views._studentDoLogin('${s.id}')">Yes, that's me! Sign in →</button>
+      <div class="t-small t-muted mb1">Is this you? If yes, tap the button 'continue' below to sign in.</div>
+      <button id="sl_go" class="btn btn-primary btn-block btn-lg" onclick="Views._studentDoLogin('${s.id}')">Yes, that's me! Continue→</button>
     </div>`;
 };
 Views._studentDoLogin = async (id)=>{
@@ -1883,7 +1883,7 @@ Views._studentDoLogin = async (id)=>{
   try {
     const res = await Auth.studentLogin(s.class_id, s.name);
     if(!res.ok){ toast(res.msg,'error'); return; }
-    toast(`Karibu, ${res.session.name}!`,'success');
+    toast(`Welcome, ${res.session.name}!`,'success');
     location.hash = '#/dashboard';
   } finally {
     if(btn){ btn.disabled = false; btn.textContent = 'Sign in'; }
@@ -1951,7 +1951,7 @@ Views.studentDashboard = ()=>{
       <div class="card mb2" style="background:linear-gradient(135deg,var(--coral),var(--sun));color:#fff;border:none">
         <div class="flex-between">
           <div>
-            <div class="t-tiny" style="opacity:.85">Karibu / Welcome</div>
+            <div class="t-tiny" style="opacity:.85">Welcome / Karibu</div>
             <h2 style="margin:.2rem 0;color:#fff">${escapeHtml(stu.name)}</h2>
             <div style="opacity:.9">Admission ${escapeHtml(stu.admission_number)} · ${escapeHtml(clsName(stu.class_id))}</div>
           </div>
