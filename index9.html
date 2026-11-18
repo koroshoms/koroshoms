@@ -4675,16 +4675,16 @@ Views.parentLogin = ()=>{
     <div class="page-narrow">
       <div class="card">
         <div style="text-align:center;margin-bottom:1rem">${Views._logo()}</div>
-        <h2 style="text-align:center">Parent / guardian portal</h2>
-        <p class="t-small t-muted t-center mb2">Search for your child by name below and tap them in the list. No admission number or phone number is needed.</p>
+        <h2 style="text-align:center">Dashibodi ya Mzazi / Mlezi</h2>
+        <p class="t-small t-muted t-center mb2">Tafuta jina la mtoto wako hapa chini kisha bonyeze hilo jina kwenye orodha.</p>
         <div class="field">
-          <label>Search your child\'s name *</label>
-          <input id="pa_search" class="input" placeholder="Type your child\'s name…" autocomplete="off" oninput="Views._parentSearch()">
+          <label>Tafuta jina la mtoto wako *</label>
+          <input id="pa_search" class="input" placeholder="Andika jina la mtoto…" autocomplete="off" oninput="Views._parentSearch()">
         </div>
         <div id="pa_results" style="margin-bottom:.6rem"></div>
         <div id="pa_pick" class="alert alert-info" style="display:none;margin-bottom:.6rem"></div>
-        <button class="btn btn-primary btn-block" id="pa_go" onclick="Views._parentDoLogin()" disabled>View results →</button>
-        <div class="t-center mt2"><a href="#/" class="btn btn-ghost btn-sm">← Back to home</a></div>
+        <button class="btn btn-primary btn-block" id="pa_go" onclick="Views._parentDoLogin()" disabled>Tazama matokeo yake →</button>
+        <div class="t-center mt2"><a href="#/" class="btn btn-ghost btn-sm">← Rudi nyumbani</a></div>
       </div>
     </div>`);
 };
@@ -4701,14 +4701,14 @@ Views._parentSearch = ()=>{
   // Search the cached student list by name (case-insensitive, partial match).
   const matches = DB.findWhere('students', s=> (s.name||'').toLowerCase().includes(q)).slice(0,12);
   if(matches.length===0){
-    out.innerHTML = '<div class="t-muted t-small">No child found with that name. Check the spelling or contact the school office.</div>';
+    out.innerHTML = '<div class="t-muted t-small">Mwanafunzi mwenye jina hilo hakupatikana kwenye mfumo. Tafadhali hakikisha jina limeandikwa kwa usahihi au wasiliana na ofisi ya shule kwa msaada.<br>Simu:<b>0613367354</b></div>';
     return;
   }
   out.innerHTML = matches.map(s=>{
     const cls = DB.find('classes', s.class_id);
     return `<button type="button" class="card hover" style="width:100%;text-align:left;margin-bottom:.4rem;padding:.6rem .8rem;cursor:pointer;border:1px solid var(--ink-200)" onclick="Views._parentPick('${s.id}')">
       <div class="t-bold">${escapeHtml(s.name)}</div>
-      <div class="t-small t-muted">${escapeHtml(cls? cls.level : '—')}${s.admission_number? ' · Admission '+escapeHtml(s.admission_number):''}</div>
+      <div class="t-small t-muted">${escapeHtml(cls? cls.level : '—')}${s.admission_number? ' · Na. ya usajili '+escapeHtml(s.admission_number):''}</div>
     </button>`;
   }).join('');
 };
@@ -4721,29 +4721,29 @@ Views._parentPick = (id)=>{
   document.getElementById('pa_results').innerHTML='';
   const pick = document.getElementById('pa_pick');
   pick.style.display='';
-  pick.innerHTML = '✓ Selected child: <b>'+escapeHtml(stu.name)+'</b>'+(cls? ' · '+escapeHtml(cls.level):'');
+  pick.innerHTML = '✓ Mwanafunzi aliyechaguliwa: <b>'+escapeHtml(stu.name)+'</b>'+(cls? ' · '+escapeHtml(cls.level):'');
   document.getElementById('pa_go').disabled = false;
   document.getElementById('pa_search').value = stu.name;
 };
 
 Views._parentDoLogin = ()=>{
   const id = window._parentPickedId;
-  if(!id){ toast('Please search and select your child first.','warn'); return; }
+  if(!id){ toast('Tafadhali tafuta na uchague mwanafunzi wako kwanza.','warn'); return; }
   const stu = DB.find('students', id);
-  if(!stu){ toast('Student record not found.','error'); return; }
+  if(!stu){ toast('Taarifa za mwanafunzi hazikupatikana kwenye mfumo.','error'); return; }
   Auth._setSession({
     id: 'parent_'+stu.id, role:'parent', name: (stu.parent_name||'Parent'),
     student_id: stu.id, student_name: stu.name, login_at: nowISO()
   });
-  toast('Welcome, '+(stu.parent_name||'Parent')+'. You are viewing '+stu.name+"'s results.", 'success');
+  toast('Karibu, '+(stu.parent_name||'Parent')+'. Unatazama matokeo ya '+stu.name+".", 'success');
   Views.parentDashboard();
 };
 
 Views.parentDashboard = ()=>{
   const sess = Auth.current();
-  if(!sess || sess.role!=='parent'){ toast('Please sign in as a parent.','warn'); location.hash='#/parent'; return; }
+  if(!sess || sess.role!=='parent'){ toast('Tafadhali ingia kwenye akaunti yako ya mzazi ili kuendelea.','warn'); location.hash='#/parent'; return; }
   const stu = DB.find('students', sess.student_id);
-  if(!stu){ toast('Student record missing.','error'); Auth.logout(); return; }
+  if(!stu){ toast('Rekodi ya mwanafunzi haipo kwenye mfumo.','error'); Auth.logout(); return; }
   const attempts = DB.findWhere('attempts', a=> a.student_id===stu.id && a.status==='PUBLISHED')
                     .sort((a,b)=> new Date(b.submitted_at||0)-new Date(a.submitted_at||0));
   Views.shell(`
@@ -4751,16 +4751,16 @@ Views.parentDashboard = ()=>{
       <div class="card mb2" style="background:linear-gradient(135deg,var(--coral),var(--sun));color:#fff;border:none">
         <div class="flex-between">
           <div>
-            <div class="t-tiny" style="opacity:.85">Your child</div>
+            <div class="t-tiny" style="opacity:.85">Mtoto wako</div>
             <h2 style="color:#fff;margin:.2rem 0">${escapeHtml(stu.name)}</h2>
-            <div style="opacity:.9">Admission ${escapeHtml(stu.admission_number)} · ${escapeHtml(clsName(stu.class_id))}</div>
+            <div style="opacity:.9">Usajili ${escapeHtml(stu.admission_number)} · ${escapeHtml(clsName(stu.class_id))}</div>
           </div>
           <div class="avatar" style="width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.4rem">${initials(stu.name)}</div>
         </div>
       </div>
-      <h3 class="mb1">Published results</h3>
+      <h3 class="mb1">Matokeo yaliyochapishwa</h3>
       ${attempts.length===0
-        ? `<div class="empty"><div class="ico">📭</div><h3>No published results yet</h3><p>When your child's teacher publishes an examination result, it will appear here.</p></div>`
+        ? `<div class="empty"><div class="ico">📭</div><h3>Hakuna matokeo yaliyotangazwa bado. </h3><p>Matokeo ya mtihani yatatokea hapa mara tu mwalimu wa mtoto wako atakapoyatangaza.</p></div>`
         : `<div class="parent-card">
             ${attempts.map(a=>{
               const e = DB.find('exams', a.exam_id);
@@ -4775,13 +4775,13 @@ Views.parentDashboard = ()=>{
                 <div style="text-align:right">
                   <div class="t-bold" style="font-size:1.3rem;color:${gradeColor}">${a.total_marks}/${a.max_marks}</div>
                   <div class="t-small t-muted">Grade ${grade} · ${pct}%</div>
-                  <a href="#/report-card/${stu.id}" class="btn btn-ghost btn-sm">View report card</a>
+                  <a href="#/report-card/${stu.id}" class="btn btn-ghost btn-sm">Tazama matokeo</a>
                 </div>
               </div>`;
             }).join('')}
           </div>`}
       <div class="t-center mt2">
-        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Sign out</button>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Toka</button>
       </div>
     </div>`);
 };
@@ -4816,12 +4816,12 @@ Views._notifyParents = (attId)=>{
   const phone = (stu.parent_phone||'').replace(/\D/g,'');
   if(!phone){ toast('No parent phone is recorded for this student. Please update the student record first.','warn'); return; }
   const pct = att.max_marks? Math.round(att.total_marks/att.max_marks*100):0;
-  const grade = pct>=80?'A':pct>=70?'B':pct>=60?'C':pct>=50?'D':'F';
+  const grade = pct>=81?'A':pct>=61?'B':pct>=41?'C':pct>=21?'D':'F';
   // Convert local Tanzanian numbers (0…) to international (+255…) for wa.me
   let intl = phone;
   if(intl.startsWith('0')) intl = '255'+intl.slice(1);
   if(intl.startsWith('255') && !intl.startsWith('+')) intl = intl;
-  const msg = `Hello ${stu.parent_name||'parent'}, this is ${APP.schoolName}. ${stu.name}'s result for "${exam.title}" is ready: ${att.total_marks}/${att.max_marks} (${pct}%, grade ${grade}). Signed in to the parent portal to see the full report card. — ${APP.schoolMotto}`;
+  const msg = `Hello ${stu.parent_name||'parent'}, this is ${APP.schoolName}. ${stu.name}'s result for "${exam.title}" is ready: ${att.total_marks}/${att.max_marks} (${pct}%, grade ${grade}). Sign in to the parent portal to see the full report card. — ${APP.schoolMotto}`;
   const url = `https://wa.me/${intl}?text=${encodeURIComponent(msg)}`;
   window.open(url, '_blank');
   DB.audit('PARENT_NOTIFY_WA', Auth.current().id, Auth.current().role, { attempt_id: attId, student_id: stu.id });
@@ -4846,7 +4846,7 @@ Views.reportCard = (studentId)=>{
   const totalScore = attempts.reduce((s,a)=> s + (a.total_marks||0), 0);
   const totalMax = attempts.reduce((s,a)=> s + (a.max_marks||0), 0);
   const overall = totalMax? Math.round(totalScore/totalMax*100):0;
-  const avgGrade = overall>=80?'A':overall>=70?'B':overall>=60?'C':overall>=50?'D':'F';
+  const avgGrade = overall>=81?'A':overall>=61?'B':overall>=41?'C':overall>=21?'D':'F';
   const cls = DB.find('classes', stu.class_id);
 
   document.getElementById('app').innerHTML = `
@@ -4860,30 +4860,30 @@ Views.reportCard = (studentId)=>{
       <div style="text-align:center;border-bottom:2px solid #b3372b;padding-bottom:.6rem;margin-bottom:1rem">
         <div style="font-size:1.6rem;font-weight:800;color:#b3372b">${escapeHtml(APP.schoolName)}</div>
         <div class="school-line">${escapeHtml(APP.schoolMotto)}</div>
-        <div class="school-line">Academic Year ${escapeHtml(DB.raw().settings.academic_year||'2026')}</div>
-        <h1 style="margin-top:.6rem">Student Report Card</h1>
+        <div class="school-line">Mwaka wa Masomo ${escapeHtml(DB.raw().settings.academic_year||'2026')}</div>
+        <h1 style="margin-top:.6rem">Kadi ya Matokeo ya Mwanafunzi</h1>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:1rem 2rem">
-        <div><b>Name:</b> ${escapeHtml(stu.name)}</div>
-        <div><b>Admission No:</b> ${escapeHtml(stu.admission_number)}</div>
-        <div><b>Class:</b> ${escapeHtml(cls? cls.level : '—')}</div>
-        <div><b>Date issued:</b> ${fmtDate(nowISO())}</div>
+        <div><b>Jina la mwanafunzi:</b> ${escapeHtml(stu.name)}</div>
+        <div><b>Namba ya usajili:</b> ${escapeHtml(stu.admission_number)}</div>
+        <div><b>Darasa:</b> ${escapeHtml(cls? cls.level : '—')}</div>
+        <div><b>Tarehe ya kutolewa:</b> ${fmtDate(nowISO())}</div>
       </div>
       <div class="summary-box">
-        <div><div class="t-tiny t-muted">Examinations sat</div><div class="v">${attempts.length}</div></div>
-        <div><div class="t-tiny t-muted">Total marks</div><div class="v">${totalScore} / ${totalMax}</div></div>
-        <div><div class="t-tiny t-muted">Overall average</div><div class="v">${overall}%</div></div>
-        <div><div class="t-tiny t-muted">Average grade</div><div class="v">${avgGrade}</div></div>
+        <div><div class="t-tiny t-muted">Mitihani aliyofanya</div><div class="v">${attempts.length}</div></div>
+        <div><div class="t-tiny t-muted">Jumla ya alama</div><div class="v">${totalScore} / ${totalMax}</div></div>
+        <div><div class="t-tiny t-muted">Wastani wa jumla</div><div class="v">${overall}%</div></div>
+        <div><div class="t-tiny t-muted">Daraja la wastani</div><div class="v">${avgGrade}</div></div>
       </div>
       <table>
-        <thead><tr><th>#</th><th>Examination</th><th>Subject</th><th>Category</th><th>Date</th><th>Score</th><th>%</th><th>Grade</th></tr></thead>
+        <thead><tr><th>#</th><th>Mtihani</th><th>Somo</th><th>Aina</th><th>Tarehe</th><th>Alama</th><th>%</th><th>Daraja</th></tr></thead>
         <tbody>
           ${attempts.length===0
             ? `<tr><td colspan="8" style="text-align:center;padding:1rem">No results published yet.</td></tr>`
             : attempts.map((a,i)=>{
                 const e = DB.find('exams', a.exam_id);
                 const pct = a.max_marks? Math.round(a.total_marks/a.max_marks*100):0;
-                const g = pct>=80?'A':pct>=70?'B':pct>=60?'C':pct>=50?'D':'F';
+                const g = pct>=81?'A':pct>=61?'B':pct>=41?'C':pct>=21?'D':'F';
                 return `<tr>
                   <td>${i+1}</td>
                   <td>${escapeHtml(e? e.title : 'Examination')}</td>
@@ -4899,17 +4899,17 @@ Views.reportCard = (studentId)=>{
       </table>
       <div style="margin-top:1.5rem;display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap">
         <div>
-          <div class="t-tiny t-muted">Class teacher's remark</div>
+          <div class="t-tiny t-muted">Maoni ya Mwalimu wa Darasa</div>
           <div style="border-bottom:1px solid #999;min-height:3rem;width:300px"></div>
         </div>
         <div>
-          <div class="t-tiny t-muted">Head teacher's signature</div>
+          <div class="t-tiny t-muted">Sahihi ya Mkuu wa Shule</div>
           <div style="border-bottom:1px solid #999;min-height:3rem;width:300px"></div>
         </div>
       </div>
       <div class="t-center t-tiny t-muted" style="margin-top:1.5rem">
         Generated by ${escapeHtml(APP.name)} on ${fmtDate(nowISO())}.<br>
-        To print or save as PDF, use your browser\'s Print dialog (Ctrl/Cmd + P) and choose "Save as PDF".
+        Kuchapisha au kuhifadhi kama PDF: Bonyeza maneno (Print/Save as PDF) hapo juu kisha "Save".
       </div>
     </div>`;
 };
